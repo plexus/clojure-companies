@@ -16,8 +16,7 @@
   (map (fn [[c u]]
          {:company (renames c c)
           :url u})
-       (next (csv/read-csv (slurp company-csv-url)
-                           :separator ", "))))
+       (next (csv/read-csv (slurp company-csv-url)))))
 
 (comment
   (clojure-company-data))

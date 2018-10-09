@@ -53,8 +53,10 @@
 (defn merged-data []
   (let [site-names (set (map :company site-data))]
     (reduce (fn [res {:keys [company url]}]
-              (if (and (not (contains? site-names company)) url)
-                (conj res {:company company :url (str " pass:[" url "]")})
+              (if (and (not (contains? site-names company))
+                       (not (some #{company} (map :company res))) ;;prevent duplicates
+                       url)
+                (conj res {:company company :url (str "pass:[" url "]")})
                 res))
             site-data
             sheet-data)))
@@ -63,7 +65,7 @@
 (comment
   (with-open [writer (io/writer "/home/arne/github/clojure-site/content/community/companies.csv")]
     (csv/write-csv writer
-                   (into [["Name" " URL"]]
+                   (into [["Name" "URL"]]
                          (map (juxt :company :url))
                          (sort-by (fn [c] (str/lower-case (apply str (re-seq #"[0-9a-zA-Z]+" (:company c)))))
                                   (merged-data)))))
