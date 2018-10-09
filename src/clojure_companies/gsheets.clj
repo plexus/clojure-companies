@@ -76,7 +76,7 @@
 (defmethod goog->clj java.util.Map [m]
   (into {} map-goog->clj-kv m))
 
-(defmethod goog->clj java.lang.String [s] s)
+(defmethod goog->clj java.lang.String [s] (str/trim s))
 (defmethod goog->clj java.lang.Float [f] f)
 (defmethod goog->clj java.lang.Integer [i] i)
 (defmethod goog->clj java.lang.Boolean [b] b)
@@ -108,8 +108,10 @@
     (mapcat (fn [[continent companies]]
               (->> companies
                    (map #(assoc % "Continent" continent))
-                   (map (fn [c] (into {} (map (fn [[k v]] [(keyword (str/lower-case k)) v])) c)))))
+                   (map (fn [c] (into {} (map (fn [[k v]] [(keyword (str/lower-case k)) v])) c)))
+                   (filter :company)))
             (sheets-data (goog->clj spreadsheet)))))
+
 
 (comment
   (take 2 (clojure-company-data)))
